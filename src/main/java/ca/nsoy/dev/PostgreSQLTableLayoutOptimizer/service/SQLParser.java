@@ -10,8 +10,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class SQLParser {
 
-	public static List<Pair<String, Column>> extractColumns(List<String> ddlScript) {
-		List<Pair<String, Column>> columnsWithLineDefinition = new ArrayList<>();
+	public static List<Pair<String, Column>> extractColumnsInformation(List<String> ddlScript) {
+		List<Pair<String, Column>> ddlLineDefinitionColumnPairs = new ArrayList<>();
 		// On copie la liste en ne prennant pas la premiere ligne CREATE TABLE
 		var ddlScriptWithoutCreateTable = ddlScript.subList(1, ddlScript.size());
 
@@ -30,14 +30,13 @@ public class SQLParser {
 			if (matcher.find()) {
 				String columnName = matcher.group(1);
 				String columnType = matcher.group(2);
-				columnsWithLineDefinition.add(Pair.of(line,new Column(columnName, columnType)));
-				System.out.println("Column: "+columnsWithLineDefinition);
+				ddlLineDefinitionColumnPairs.add(Pair.of(line,new Column(columnName, columnType)));
 			}
 			else{
-				System.out.println("Matcher not find");
+				throw new RuntimeException("Something went wrong with the content of the file. Matcher not found in this line: "+line);
 			}
 		}
 
-		return columnsWithLineDefinition;
+		return ddlLineDefinitionColumnPairs;
 	}
 }
